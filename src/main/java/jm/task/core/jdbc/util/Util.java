@@ -1,12 +1,10 @@
 package jm.task.core.jdbc.util;
 
 import java.sql.*;
-import java.util.Map;
-import java.util.Properties;
-import java.util.concurrent.Executor;
+
 
 public class Util {
-   private static final String DB_DRIVER = "com.mysql.cj.jdbc.Driver";// реализуйте настройку соеденения с БД            написал я 4 поля
+   private static final String DB_DRIVER = "com.mysql.cj.jdbc.Driver";// реализуйте настройку соеденения с БД            написал 4 поля
    private static final String DB_URL = "jdbc:mysql://localhost:3306/dbuser?serverTimezone=UTC";
    private static final String DB_USERNAME = "root";
    private static final String DB_PASSWORD = "roott";

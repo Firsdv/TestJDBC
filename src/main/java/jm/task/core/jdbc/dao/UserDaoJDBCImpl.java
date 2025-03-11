@@ -1,11 +1,9 @@
 package jm.task.core.jdbc.dao;
 
 import jm.task.core.jdbc.model.User;
+import jm.task.core.jdbc.util.Util;
 
-import java.sql.PreparedStatement;
-import java.sql.ResultSet;
-import java.sql.SQLException;
-import java.sql.Statement;
+import java.sql.*;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -13,37 +11,26 @@ import static jm.task.core.jdbc.util.Util.getConnection;
 
 public class UserDaoJDBCImpl implements UserDao {
     public UserDaoJDBCImpl() {
-        UserDao userDao = new UserDaoJDBCImpl();
-
     }
     public void createUsersTable() throws SQLException {
-
-        PreparedStatement preparedStatement = null;
         String sql = "CREATE TABLE IF NOT EXISTS user (" +
                 "id BIGINT AUTO_INCREMENT PRIMARY KEY," +
                 "name VARCHAR(45) NOT NULL," +
                 "lastName VARCHAR(45) NOT NULL," +
                 "age TINYINT UNSIGNED NOT NULL" + ")";
-        try {
-            preparedStatement = getConnection().prepareStatement(sql);
+        try (Connection connection = Util.getConnection();
+             PreparedStatement preparedStatement = connection.prepareStatement(sql)) {
             preparedStatement.executeUpdate();
+            System.out.println("Table 'user' created (or already exists).");
 
         } catch (SQLException e) {
             e.printStackTrace();
-        } finally {
-            if (preparedStatement != null) {
-                preparedStatement.close();
-            }
-            if (getConnection() != null) {
-                getConnection().close();
-            }
         }
-
     }
 
     public void dropUsersTable() {
         String sql = "DROP TABLE IF EXISTS user";
-        try (Statement statement = getConnection().createStatement()) {  // try-with-resources
+        try (Statement statement = getConnection().createStatement()) {
             statement.executeUpdate(sql);
             System.out.println("Table 'user' dropped.");
 
@@ -52,7 +39,6 @@ public class UserDaoJDBCImpl implements UserDao {
             e.printStackTrace();
         }
     }
-
     public void saveUser(String name, String lastName, byte age) {
         String sql = "INSERT INTO user (name, lastName, age) VALUES (?, ?, ?)";
         try (PreparedStatement preparedStatement = getConnection().prepareStatement(sql)) {
@@ -67,7 +53,6 @@ public class UserDaoJDBCImpl implements UserDao {
             e.printStackTrace();
         }
     }
-
     public void removeUserById(long id) {
         String sql = "DELETE FROM user WHERE id = ?";
         try (PreparedStatement preparedStatement = getConnection().prepareStatement(sql)) {
@@ -84,9 +69,7 @@ public class UserDaoJDBCImpl implements UserDao {
             System.err.println("Error removing user.");
             e.printStackTrace();
         }
-
     }
-
     public List<User> getAllUsers() throws SQLException {
         List<User> users = new ArrayList<>();
         String sql = "SELECT id, name, lastName, age FROM user";
@@ -117,7 +100,6 @@ public class UserDaoJDBCImpl implements UserDao {
         }
         return users;
     }
-
     public void cleanUsersTable() {
         String sql = "TRUNCATE TABLE user";
         try (Statement statement = getConnection().createStatement()) {
@@ -129,15 +111,15 @@ public class UserDaoJDBCImpl implements UserDao {
             e.printStackTrace();
         }
     }
-    public void closeConnection() {
-        try {
-            if (getConnection() != null && !getConnection().isClosed()) {
-                getConnection().close();
-                System.out.println("Connection closed.");
+        public void closeConnection () {
+            try {
+                if (getConnection() != null && !getConnection().isClosed()) {
+                    getConnection().close();
+                    System.out.println("Connection closed.");
+                }
+            } catch (SQLException e) {
+                System.err.println("Error closing connection.");
+                e.printStackTrace();
             }
-        } catch (SQLException e) {
-            System.err.println("Error closing connection.");
-            e.printStackTrace();
         }
     }
-}
