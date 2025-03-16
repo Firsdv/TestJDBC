@@ -71,7 +71,7 @@ public class UserDaoJDBCImpl implements UserDao {
         }
     }
     public List<User> getAllUsers() throws SQLException {
-        List<User> users = new ArrayList<>();
+        List<User> userList = new ArrayList<>();
         String sql = "SELECT id, name, lastName, age FROM user";
         Statement statement = null;
         try {
@@ -85,7 +85,7 @@ public class UserDaoJDBCImpl implements UserDao {
                 user.setLastName(resultSet.getString("lastName"));
                 user.setAge(resultSet.getByte("age"));
 
-                users.add(user);
+                userList.add(user);
             }
 
         } catch (SQLException e) {
@@ -98,7 +98,7 @@ public class UserDaoJDBCImpl implements UserDao {
                 getConnection().close();
             }
         }
-        return users;
+        return userList;
     }
     public void cleanUsersTable() {
         String sql = "TRUNCATE TABLE user";
